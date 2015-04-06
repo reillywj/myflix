@@ -1,7 +1,7 @@
 class VideosController < ApplicationController
 
   def index
-    @videos = Video.all
+    @categories = Category.all.sort{|x,y| x.name <=> y.name}
   end
 
   def show
