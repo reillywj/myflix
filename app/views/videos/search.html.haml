@@ -1,0 +1,6 @@
+.videos.row
+  - @results.each do |video|
+    .video.col-sm-2{title: "#{video.title}: #{video.description}"}
+      = link_to video_path(video) do
+        %img(src="/#{video.small_cover_url}")
+%p.video= "No videos in this category." if @results.empty?
