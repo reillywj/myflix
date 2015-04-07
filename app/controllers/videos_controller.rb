@@ -1,4 +1,5 @@
 class VideosController < ApplicationController
+  before_action :require_user_logged_in
 
   def index
     @categories = Category.all.sort{|x,y| x.name <=> y.name}
