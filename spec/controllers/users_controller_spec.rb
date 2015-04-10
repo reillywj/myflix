@@ -9,10 +9,16 @@ describe UsersController do
   end
   describe "POST create" do
     context "with valid user" do
-      before { post: create, user: Fabricate.attributes_for(:user)}
-      it "sets @user" { expect(assigns(:user)).to be_instance_of User }
-      it "creates a valid user" {expect(User.all.count).to eq(1)}
-      it "redirects to sign_in path" { response.should redirect_to sign_in_path }
+      before { post :create, user: Fabricate.attributes_for(:user)}
+      it "sets @user" do
+        expect(assigns(:user)).to be_instance_of User
+      end
+      it "creates a valid user" do
+        expect(User.all.count).to eq(1)
+      end
+      it "redirects to sign_in path" do
+        response.should redirect_to sign_in_path
+      end
     end
 
     context "without valid user" do
