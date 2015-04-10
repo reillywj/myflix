@@ -1,0 +1,62 @@
+require "spec_helper"
+
+describe SessionsController do
+  describe "GET new" do
+    it "redirects to home_path if logged in" do
+      user = Fabricate(:user)
+      session[:user_id] = user.id
+      get :new
+      response.should redirect_to home_path
+    end
+    it "renders the new session template if not logged in" do
+      user = Fabricate(:user)
+      session[:user_id] = nil
+      get :new
+      response.should render_template :new
+    end
+  end
+  describe "POST create" do
+    it "finds a valid user with valid email" do
+      user = Fabricate(:user, password: "password")
+      expect(User.where(email: user.email).count).to eq(1)
+    end
+    context "with a valid user" do
+      it "sets the session user_id" do
+        user = Fabricate(:user, password: "password")
+        post :create, email: user.email, password: "password"
+        expect(session[:user_id]).to eq(user.id)
+      end
+      it "redirects to home path" do
+        user = Fabricate(:user, password: "password")
+        post :create, email: user.email, password: "password"
+        response.should redirect_to home_path
+      end
+    end
+
+    context "with invalid credentials" do
+      it "redirects to sign_in path with invalid email" do
+        user = Fabricate(:user, email: "valid@email.com", password: "valid_password")
+        post :create, email: "invalid@email.com", password: "valid_password"
+        response.should redirect_to sign_in_path
+      end
+      it "redirects to sign_in path with invalid password" do
+        user = Fabricate(:user, password: "password")
+        post :create, email: user.email, password: "invalid_password"
+        response.should redirect_to sign_in_path
+      end
+    end
+  end
+  describe "GET destroy" do
+    before do
+      user = Fabricate(:user)
+      session[:user_id] = user.id
+      get :destroy, id: user.id
+    end
+    it "sets session user_id to nil" do
+      expect(session[:user_id]).to eq(nil)
+    end
+    it "redirects to root path" do
+      response.should redirect_to root_path
+    end
+  end
+end
