@@ -3,14 +3,11 @@ require "spec_helper"
 describe SessionsController do
   describe "GET new" do
     it "redirects to home_path if logged in" do
-      user = Fabricate(:user)
-      session[:user_id] = user.id
+      session[:user_id] = Fabricate(:user).id
       get :new
       response.should redirect_to home_path
     end
     it "renders the new session template if not logged in" do
-      user = Fabricate(:user)
-      session[:user_id] = nil
       get :new
       response.should render_template :new
     end
@@ -20,7 +17,7 @@ describe SessionsController do
       user = Fabricate(:user, password: "password")
       expect(User.where(email: user.email).count).to eq(1)
     end
-    context "with a valid user" do
+    context "with valid credentials" do
       it "sets the session user_id" do
         user = Fabricate(:user, password: "password")
         post :create, email: user.email, password: "password"
@@ -30,6 +27,11 @@ describe SessionsController do
         user = Fabricate(:user, password: "password")
         post :create, email: user.email, password: "password"
         response.should redirect_to home_path
+      end
+      it "flashes a success message" do
+        user = Fabricate(:user, password: "password")
+        post :create, email: user.email, password: "password"
+        expect(flash[:success]).not_to be_blank
       end
     end
 
@@ -44,19 +46,25 @@ describe SessionsController do
         post :create, email: user.email, password: "invalid_password"
         response.should redirect_to sign_in_path
       end
+      it "flashes a danger message" do
+        post :create, email: "some@email.com", password: "some_password"
+        expect(flash[:danger]).not_to be_blank
+      end
     end
   end
   describe "GET destroy" do
     before do
-      user = Fabricate(:user)
-      session[:user_id] = user.id
-      get :destroy, id: user.id
+      session[:user_id] = Fabricate(:user).id
+      get :destroy
     end
     it "sets session user_id to nil" do
       expect(session[:user_id]).to eq(nil)
     end
     it "redirects to root path" do
       response.should redirect_to root_path
+    end
+    it "flashes a success message" do
+      expect(flash[:success]).not_to be_blank
     end
   end
 end
