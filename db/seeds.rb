@@ -22,8 +22,4 @@ Review.create(rating: 4, review: "Great comedy classic!", video: major_payne, us
 
 video_titles.each do |title|
   disney_video = Video.create(category: disney, title: title, description: "Disney story of #{title}.", small_cover_url: covers.sample, large_cover_url: "tmp/monk_large.jpg")
-  
-  [mike, john].each do |user|
-    Review.create(rating: [1,2,3,4,5].sample, review: "#{user.full_name}'s review.", video: disney_video, user: user)
-  end
 end

@@ -10,6 +10,12 @@ describe VideosController do
         expect(assigns(:video)).to eq(video)
       end
 
+      it "sets @review" do
+        video = Fabricate(:video)
+        get :show, id: video.id
+        expect(assigns(:review).class).to eq(Review)
+      end
+
       it "renders the show template" do
         video = Fabricate(:video)
         get :show, id: video.id
@@ -18,7 +24,7 @@ describe VideosController do
     end
 
     context "without authenticated user redirect user to sign_in path" do
-      it "redirects user to root path" do
+      it "redirects user to sign_in path" do
         video = Fabricate(:video)
         get :show, id: video.id
         response.should redirect_to sign_in_path

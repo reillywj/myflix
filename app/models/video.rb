@@ -25,6 +25,6 @@ class Video < ActiveRecord::Base
 
   def average_rating_of_reviews
     return nil if reviews.empty?
-    return (sum_review_ratings.to_f / count_reviews).round(2)
+    return (sum_review_ratings.to_f / count_reviews).round(1)
   end
 end

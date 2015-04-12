@@ -136,21 +136,21 @@ describe Video do
       [3,3,3,4].each do |i|
         Fabricate(:review, video: video, rating: i)
       end
-      expect(video.average_rating_of_reviews).to eq(3.25)
+      expect(video.average_rating_of_reviews).to eq(3.3)
     end
     it "returns 3.33 if there are 3 reviews with a rating of 3, 3, and 4 respectively" do
       video = Fabricate(:video)
       [3,3,4].each do |i|
         Fabricate(:review, video: video, rating: i)
       end
-      expect(video.average_rating_of_reviews).to eq(3.33)
+      expect(video.average_rating_of_reviews).to eq(3.3)
     end
     it "returns 3.67 if there are 3 reviews with a rating of 3, 4, and 4 respectively" do
       video = Fabricate(:video)
       [3,4,4].each do |i|
         Fabricate(:review, video: video, rating: i)
       end
-      expect(video.average_rating_of_reviews).to eq(3.67)
+      expect(video.average_rating_of_reviews).to eq(3.7)
     end
   end
   
