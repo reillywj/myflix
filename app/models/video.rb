@@ -20,11 +20,11 @@ class Video < ActiveRecord::Base
   def sum_review_ratings
     sum = 0
     reviews.each {|review| sum += review.rating}
-    return sum
+    sum
   end
 
   def average_rating_of_reviews
     return nil if reviews.empty?
-    return (sum_review_ratings.to_f / count_reviews).round(1)
+    (sum_review_ratings.to_f / count_reviews).round(1)
   end
 end
