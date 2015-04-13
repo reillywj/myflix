@@ -10,11 +10,11 @@ class ReviewsController < ApplicationController
       flash[:success] = "You have reviewed #{@video.title}!"
       redirect_to video_path(@video)
     else
-      unless @review.errors.messages[:user_id]
-        flash[:danger] = "You must provide valid feedback."
-      else
+      if @review.errors.messages[:user_id]
         flash[:danger] = "You have already reviewed this video."
         @review = Review.new
+      else
+        flash[:danger] = "You must provide valid feedback."
       end
       render "videos/show"
     end
