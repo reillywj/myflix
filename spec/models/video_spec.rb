@@ -109,20 +109,10 @@ describe Video do
       Fabricate(:review, video: video, rating: 1)
       expect(video.average_rating_of_reviews).to eq(1.0)
     end
-    it "returns 5.0 if there is only one review with a rating of 5" do
+    it "returns 5.0 if there are 5 reviews with a rating of 5 each" do
       video = Fabricate(:video)
-      Fabricate(:review, video: video, rating: 5)
+      5.times {Fabricate(:review, video: video, rating: 5)}
       expect(video.average_rating_of_reviews).to eq(5.0)
-    end
-    it "returns 5.0 if there are 10 reviews with a rating of 5 each" do
-      video = Fabricate(:video)
-      10.times {Fabricate(:review, video: video, rating: 5)}
-      expect(video.average_rating_of_reviews).to eq(5.0)
-    end
-    it "returns 1.0 if there are 20 reviews with a rating of 1 each" do
-      video = Fabricate(:video)
-      10.times {Fabricate(:review, video: video, rating: 1)}
-      expect(video.average_rating_of_reviews).to eq(1.0)
     end
     it "returns 3.5 if there are 2 reviews with a rating of 3 and 4 respectively" do
       video = Fabricate(:video)
@@ -131,21 +121,14 @@ describe Video do
       end
       expect(video.average_rating_of_reviews).to eq(3.5)
     end
-    it "returns 3.25 if there are 4 reviews with a rating of 3, 3, 3, and 4 respectively" do
+    it "returns 3.3 if there are 4 reviews with a rating of 3, 3, 3, and 4 respectively" do
       video = Fabricate(:video)
       [3,3,3,4].each do |i|
         Fabricate(:review, video: video, rating: i)
       end
       expect(video.average_rating_of_reviews).to eq(3.3)
     end
-    it "returns 3.33 if there are 3 reviews with a rating of 3, 3, and 4 respectively" do
-      video = Fabricate(:video)
-      [3,3,4].each do |i|
-        Fabricate(:review, video: video, rating: i)
-      end
-      expect(video.average_rating_of_reviews).to eq(3.3)
-    end
-    it "returns 3.67 if there are 3 reviews with a rating of 3, 4, and 4 respectively" do
+    it "returns 3.7 if there are 3 reviews with a rating of 3, 4, and 4 respectively" do
       video = Fabricate(:video)
       [3,4,4].each do |i|
         Fabricate(:review, video: video, rating: i)

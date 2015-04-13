@@ -13,10 +13,6 @@ describe SessionsController do
     end
   end
   describe "POST create" do
-    it "finds a valid user with valid email" do
-      user = Fabricate(:user, password: "password")
-      expect(User.where(email: user.email).count).to eq(1)
-    end
     context "with valid credentials" do
       it "sets the session user_id" do
         user = Fabricate(:user, password: "password")
