@@ -47,7 +47,6 @@ describe ReviewsController do
     context "with unauthenticated user" do
       before do
         video = Fabricate(:video)
-        user = Fabricate(:user)
         post :create, review: Fabricate.attributes_for(:review), video_id: video.id
       end
       it "expects session user_id to be nil" do
