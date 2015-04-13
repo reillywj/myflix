@@ -6,8 +6,41 @@
       .video_info.col-sm-3
         %header
           %h3= @video.title
-          %span Rating: 4.5/5.0
+          - if @video.average_rating_of_reviews
+            %span= "Rating: #{@video.average_rating_of_reviews}/5.0"
+          - else
+            %span= "Not yet reviewed."
         %p= @video.description
         .actions
           %a.btn.btn-primary(href="") Watch Now
           %a.btn.btn-default(href="") + My Queue
+
+%section.reviews.container
+  .row
+    .col-sm-10.col-sm-offset-1
+      = form_for [@video, @review] do |f|
+        %fieldset
+          .form-group
+            %label Rate this video
+            .row
+              .col-sm-3
+                = f.select :rating, options_for_select([5,4,3,2,1].map{|number| [pluralize(number, "Star"), number]}), {},class: "form-control"
+          .form-group
+            %label Write Review
+            .row
+              .col-sm-8
+                = f.text_area :review, rows: 6, class: "form-control"
+        %fieldset.form-group.actions.clearfix
+          %input(type="submit" value="Submit" class="btn")
+          = link_to "Cancel", @video
+      %header
+        %h3= "User #{"Review".pluralize(@video.count_reviews)} (#{@video.count_reviews})"
+      %ul
+        - @video.ordered_reviews.each do |review|
+          %article.review
+            %li.row
+              .col-sm-2
+                %span Rating: #{review.rating} / 5
+                %p by <a href="">#{review.user.full_name}</a>
+              .col-sm-8
+                %p=review.review
