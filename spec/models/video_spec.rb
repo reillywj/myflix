@@ -136,5 +136,16 @@ describe Video do
       expect(video.average_rating_of_reviews).to eq(3.7)
     end
   end
-  
+  describe "user_reviewed?(user)" do
+    let(:user) {Fabricate(:user)}
+    let(:video) {Fabricate(:video)}
+    it "returns false if user has not reviewed video yet" do
+      expect(video.user_reviewed?(user)).to eq(false)
+    end
+
+    it "returns true if user has reviewed video already" do
+      video.reviews.create(rating: 5, review: "A review.", user: user)
+      expect(video.user_reviewed?(user)).to eq(true)
+    end
+  end
 end
