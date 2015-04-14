@@ -5,4 +5,7 @@ class User < ActiveRecord::Base
   validates_presence_of :full_name, :email, :password
   validates_uniqueness_of :email
 
+  def queue_items
+    super.order(:position)
+  end
 end

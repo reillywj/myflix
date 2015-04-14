@@ -23,3 +23,6 @@ Review.create(rating: 4, review: "Great comedy classic!", video: major_payne, us
 video_titles.each do |title|
   disney_video = Video.create(category: disney, title: title, description: "Disney story of #{title}.", small_cover_url: covers.sample, large_cover_url: "tmp/monk_large.jpg")
 end
+
+QueueItem.create(position: 1, user: mike, video: major_payne)
+QueueItem.create(position: 2, user: mike, video: Video.last)
