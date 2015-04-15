@@ -71,41 +71,40 @@ describe QueueItemsController do
 
   describe "DELETE destroy" do
     let(:user) {Fabricate :user}
-    it "redirects to /my_queue" do
-      session[:user_id] = user.id
-      queue_item = Fabricate(:queue_item, user: user)
-      delete :destroy, id: queue_item.id
-      expect(response).to redirect_to my_queue_path
+    context "with authenticated user" do
+      let(:queue_item_to_delete) {Fabricate :queue_item, user: user, position: 1}
+      before { session[:user_id] = user.id }
+      it "redirects to /my_queue" do
+        delete :destroy, id: queue_item_to_delete.id
+        expect(response).to redirect_to my_queue_path
+      end
+      it "removes queue item from the queue" do
+        delete :destroy, id: queue_item_to_delete.id
+        expect(QueueItem.all.count).to eq(0)
+      end
+      it "updates the queue positions of remains queue_items" do
+        Fabricate(:queue_item, user: user, position: 2)
+        Fabricate(:queue_item, user: user, position: 3)
+        delete :destroy, id: queue_item_to_delete.id
+        expect(user.queue_items).not_to include(queue_item_to_delete)
+        expect(user.queue_items.first.position).to eq(1)
+        expect(user.queue_items.last.position).to eq(2)
+      end
+      it "does not delete item if current_user does not own item" do
+        another_users_queue_item = Fabricate(:queue_item, user: Fabricate(:user), position: 1)
+        delete :destroy, id: another_users_queue_item.id
+        expect(QueueItem.all.count).to eq(1)
+        expect(flash[:danger]).to eq("You can't do that.")
+      end
     end
-    it "removes queue item from the queue" do
-      session[:user_id] = user.id
-      queue_item = Fabricate(:queue_item, user: user)
-      delete :destroy, id: queue_item.id
-      expect(QueueItem.all.count).to eq(0)
-    end
-    it "updates the queue positions of remains queue_items" do
-      session[:user_id] = user.id
-      queue_item_to_delete = Fabricate(:queue_item, user: user, position: 1)
-      Fabricate(:queue_item, user: user, position: 2)
-      Fabricate(:queue_item, user: user, position: 3)
-      delete :destroy, id: queue_item_to_delete.id
-      expect(user.queue_items).not_to include(queue_item_to_delete)
-      expect(user.queue_items.first.position).to eq(1)
-      expect(user.queue_items.last.position).to eq(2)
-    end
-    it "does not delete item if current_user does not own item" do
-      another_user = Fabricate(:user)
-      session[:user_id] = user.id
-      anothers_queue_item = Fabricate(:queue_item, user: another_user, position: 1)
-      delete :destroy, id: anothers_queue_item.id
-      expect(QueueItem.all.count).to eq(1)
-      expect(flash[:danger]).to eq("You can't do that.")
-    end
-    it "redirects to sign in page for unauthenticated users" do
-      queue_item = Fabricate(:queue_item, user: user, position: 1)
-      delete :destroy, id: queue_item.id
-      expect(QueueItem.all.count).to eq(1)
-      expect(response).to redirect_to sign_in_path
+
+    context "with unauthenticated user" do
+      it "redirects to sign in page" do
+        queue_item = Fabricate(:queue_item, user: user, position: 1)
+        delete :destroy, id: queue_item.id
+        expect(QueueItem.all.count).to eq(1)
+        expect(response).to redirect_to sign_in_path
+      end
     end
   end
 end
