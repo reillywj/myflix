@@ -10,6 +10,17 @@ class QueueItemsController < ApplicationController
     redirect_to my_queue_path
   end
 
+  def destroy
+    queue_item_to_delete = QueueItem.find(params[:id])
+    if current_user_queue_items.include?(queue_item_to_delete)
+      queue_item_to_delete.destroy
+    else
+      flash[:danger] = "You can't do that."
+    end
+    update_positions(current_user_queue_items)
+    redirect_to my_queue_path
+  end
+
   private
 
   def queue_video(video)
@@ -27,5 +38,17 @@ class QueueItemsController < ApplicationController
 
   def current_user_has_queued_video?(video)
     current_user.queue_items.where(video: video).size > 0
+  end
+
+  def update_positions(queue)
+    start = 1
+    queue.each do |item|
+      item.position = start
+      start += 1
+      item.save
+    end
+  end
+  def current_user_queue_items
+    current_user.queue_items
   end
 end
