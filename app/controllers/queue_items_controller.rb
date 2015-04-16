@@ -21,6 +21,17 @@ class QueueItemsController < ApplicationController
     redirect_to my_queue_path
   end
 
+  def update_queue
+    begin
+      update_queue_items
+      update_positions(current_user_queue_items)
+    rescue ActiveRecord::RecordInvalid
+      flash[:danger] = "Invalid position numbers."
+    end
+
+    redirect_to my_queue_path
+  end
+
   private
 
   def queue_video(video)
@@ -41,14 +52,21 @@ class QueueItemsController < ApplicationController
   end
 
   def update_positions(queue)
-    start = 1
-    queue.each do |item|
-      item.position = start
-      start += 1
-      item.save
+    queue.each_with_index do |item, index|
+      item.update_attributes(position: index + 1)
     end
   end
+
   def current_user_queue_items
     current_user.queue_items
+  end
+
+  def update_queue_items
+    ActiveRecord::Base.transaction do
+      params[:queue_items].each do |queue_item_data|
+        queue_item = QueueItem.find(queue_item_data[:id])
+        queue_item.update_attributes!(position: queue_item_data[:position]) if queue_item.user == current_user
+      end
+    end
   end
 end
