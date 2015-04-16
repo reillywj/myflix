@@ -27,4 +27,8 @@ class Video < ActiveRecord::Base
     return nil if reviews.empty?
     (sum_review_ratings.to_f / count_reviews).round(1)
   end
+
+  def user_reviewed?(user)
+    !reviews.where(user: user).empty?
+  end
 end
