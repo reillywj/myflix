@@ -31,7 +31,7 @@ describe ReviewsController do
       end
       context "with invalid inputs" do
         before do
-          post :create, review: {review: "", rating: "5"}, video_id: video.id
+          post :create, review: {review: "", rating: ""}, video_id: video.id
         end
         it "renders the video page" do
           expect(response).to render_template "videos/show"
