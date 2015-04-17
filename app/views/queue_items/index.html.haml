@@ -18,15 +18,11 @@
               - @queue_items.each do |queue_item|
                 = hidden_field_tag "queue_items[][id]", queue_item.id
                 %tr
-                  %td
-                    = text_field_tag "queue_items[][position]" , nil, class: "form-control", value: queue_item.position
-                  %td
-                    = link_to queue_item.video_title, video_path(queue_item.video)
-                  %td
-                    = button_to "Play", nil, class: "btn btn-default"
-                  %td= queue_item.rating
-                  %td
-                    = link_to queue_item.category_name, category_path(queue_item.category)
+                  %td= text_field_tag "queue_items[][position]" , nil, class: "form-control", value: queue_item.position
+                  %td= link_to queue_item.video_title, video_path(queue_item.video)
+                  %td= button_to "Play", nil, class: "btn btn-default"
+                  %td= select_tag "queue_items[][rating]", options_for_video_reviews(queue_item.rating), include_blank: true
+                  %td= link_to queue_item.category_name, category_path(queue_item.category)
                   %td
                     = link_to queue_item, method: :delete do
                       %i.glyphicon.glyphicon-remove

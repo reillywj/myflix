@@ -131,6 +131,14 @@ describe QueueItemsController do
         expect(alice.queue_items.map(&:id)).to eq([queue_item2.id, queue_item1.id])
         expect(alice.queue_items.map(&:position)).to eq([1,2])
       end
+
+      context "of updating a review rating" do
+        it "adds a review to the queue_item" do
+          queue_item1 = Fabricate(:queue_item, user: alice, position: 1)
+          post :update_queue, queue_items: [{id: queue_item1.id, position: 1, rating: 5}]
+          expect(alice.queue_items.first.video.reviews.first.rating).to eq(5)
+        end
+      end
     end
 
     context "with invalid inputs" do
