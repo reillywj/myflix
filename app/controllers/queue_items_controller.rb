@@ -6,25 +6,25 @@ class QueueItemsController < ApplicationController
 
   def create
     video = Video.find(params[:video_id])
-    queue_video(video)
+    queue(video)
     redirect_to my_queue_path
   end
 
   def destroy
     queue_item_to_delete = QueueItem.find(params[:id])
-    if current_user_queue_items.include?(queue_item_to_delete)
+    if current_user.queue_items.include?(queue_item_to_delete)
       queue_item_to_delete.destroy
     else
       flash[:danger] = "You can't do that."
     end
-    update_positions(current_user_queue_items)
+    current_user.update_queue_positions
     redirect_to my_queue_path
   end
 
   def update_queue
     begin
       update_queue_items
-      update_positions(current_user_queue_items)
+      current_user.update_queue_positions
     rescue ActiveRecord::RecordInvalid
       flash[:danger] = "Invalid position numbers."
     end
@@ -34,31 +34,13 @@ class QueueItemsController < ApplicationController
 
   private
 
-  def queue_video(video)
-    if current_user_has_queued_video?(video)
+  def queue(video)
+    if current_user.has_queued?(video)
       flash[:warning] = "You have already queued #{video.title}."
     else
       flash[:success] = "You have added #{video.title} to your queue."
-      QueueItem.create(video: video, user: current_user, position: new_queue_item_position)
+      current_user.queue(video)
     end
-  end
-
-  def new_queue_item_position
-    current_user.queue_items.count + 1
-  end
-
-  def current_user_has_queued_video?(video)
-    current_user.queue_items.where(video: video).size > 0
-  end
-
-  def update_positions(queue)
-    queue.each_with_index do |item, index|
-      item.update_attributes(position: index + 1)
-    end
-  end
-
-  def current_user_queue_items
-    current_user.queue_items
   end
 
   def update_queue_items
