@@ -81,14 +81,7 @@ describe Video do
       expect(video.sum_review_ratings).to eq(4)
     end
 
-    it "should return 5 if there are two reviews with a rating of 2 and 3" do
-      [2, 3].each do |i|
-        Fabricate(:review, video: video, rating: i)
-      end
-      expect(video.sum_review_ratings).to eq(5)
-    end
-
-    it "should return 15 if there are 5 reviews with ratings of 1,2,3,4, and 5" do
+    it "should return 15 if there are five reviews with ratings of 1,2,3,4, and 5" do
       (1..5).each do |i|
         Fabricate(:review, video: video, rating: i)
       end
@@ -106,18 +99,6 @@ describe Video do
     it "returns 1.0 if there is only one review with a rating of 1" do
       Fabricate(:review, video: video, rating: 1)
       expect(video.average_rating_of_reviews).to eq(1.0)
-    end
-
-    it "returns 5.0 if there are 5 reviews with a rating of 5 each" do
-      5.times {Fabricate(:review, video: video, rating: 5)}
-      expect(video.average_rating_of_reviews).to eq(5.0)
-    end
-
-    it "returns 3.5 if there are 2 reviews with a rating of 3 and 4 respectively" do
-      [3,4].each do |i|
-        Fabricate(:review, video: video, rating: i)
-      end
-      expect(video.average_rating_of_reviews).to eq(3.5)
     end
 
     it "returns 3.3 if there are 4 reviews with a rating of 3, 3, 3, and 4 respectively" do
