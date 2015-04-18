@@ -1,13 +1,9 @@
 require "spec_helper"
 
 describe QueueItem do
-  it { should validate_presence_of :video}
-  it { should validate_presence_of :user }
-  it { should validate_presence_of :position }
+  it_validates_presence_of_set :video, :user, :position
   it { should validate_numericality_of(:position).only_integer}
-
-  it { should belong_to :user }
-  it { should belong_to :video }
+  it_belongs_to_set :user, :video
 
   describe "#video_title" do
     it "returns title of video" do

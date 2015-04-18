@@ -1,12 +1,14 @@
 require "spec_helper"
 
 describe QueueItemsController do
+  let(:alice) {Fabricate(:user)}
+
   describe "GET index" do
     context "with authenticated user" do
-      before { set_current_user }
+      before { set_current_user(alice) }
 
-      let(:queue_item1) { Fabricate :queue_item, user: get_current_user}
-      let(:queue_item2) { Fabricate :queue_item, user: get_current_user}
+      let(:queue_item1) { Fabricate :queue_item, user: alice}
+      let(:queue_item2) { Fabricate :queue_item, user: alice}
 
       it "assigns queue_items" do
         get :index
@@ -74,9 +76,9 @@ describe QueueItemsController do
 
   describe "DELETE destroy" do
     context "with authenticated user" do
-      before { set_current_user }
+      before { set_current_user(alice) }
 
-      let(:queue_item_to_delete) {Fabricate :queue_item, user: get_current_user, position: 1}
+      let(:queue_item_to_delete) {Fabricate :queue_item, user: alice, position: 1}
 
       it "redirects to /my_queue" do
         delete :destroy, id: queue_item_to_delete.id
@@ -89,12 +91,12 @@ describe QueueItemsController do
       end
 
       it "updates the queue positions of remains queue_items" do
-        Fabricate(:queue_item, user: get_current_user, position: 2)
-        Fabricate(:queue_item, user: get_current_user, position: 3)
+        Fabricate(:queue_item, user: alice, position: 2)
+        Fabricate(:queue_item, user: alice, position: 3)
 
         delete :destroy, id: queue_item_to_delete.id
-        expect(get_current_user.queue_items).not_to include(queue_item_to_delete)
-        expect(get_current_user.queue_items.map(&:position)).to eq([1,2])
+        expect(alice.queue_items).not_to include(queue_item_to_delete)
+        expect(alice.queue_items.map(&:position)).to eq([1,2])
       end
 
       it "does not delete item if current_user does not own item" do
@@ -120,12 +122,10 @@ describe QueueItemsController do
   end
 
   describe "POST update_queue" do
-    let(:alice) {Fabricate(:user)}
-
     context "with valid inputs" do
-      before { set_current_user }
-      let(:queue_item1) {Fabricate(:queue_item, user: get_current_user, position: 1)}
-      let(:queue_item2) {Fabricate(:queue_item, user: get_current_user, position: 2)}
+      before { set_current_user(alice) }
+      let(:queue_item1) {Fabricate(:queue_item, user: alice, position: 1)}
+      let(:queue_item2) {Fabricate(:queue_item, user: alice, position: 2)}
 
       it "redirects to my_queue page" do
         post :update_queue, queue_items: [{id: queue_item1.id, position: 2}, {id: queue_item2.id, position: 1}]
@@ -135,27 +135,27 @@ describe QueueItemsController do
       it "reorders the queue_items" do
         post :update_queue, queue_items: [{id: queue_item1.id, position: 2}, {id: queue_item2.id, position: 1}]
         first_queue_item = QueueItem.first
-        expect(get_current_user.queue_items.map(&:id)).to eq([queue_item2.id, queue_item1.id])
+        expect(alice.queue_items.map(&:id)).to eq([queue_item2.id, queue_item1.id])
       end
 
       it "normalizes position numbers 1 through n" do
         post :update_queue, queue_items: [{id: queue_item1.id, position: 5}, {id: queue_item2.id, position: 2}]
-        expect(get_current_user.queue_items.map(&:id)).to eq([queue_item2.id, queue_item1.id])
-        expect(get_current_user.queue_items.map(&:position)).to eq([1,2])
+        expect(alice.queue_items.map(&:id)).to eq([queue_item2.id, queue_item1.id])
+        expect(alice.queue_items.map(&:position)).to eq([1,2])
       end
 
       context "of updating a review rating" do
         it "adds a review to the queue_item" do
           post :update_queue, queue_items: [{id: queue_item1.id, position: 1, rating: 5}]
-          expect(get_current_user.queue_items.first.video.reviews.first.rating).to eq(5)
+          expect(alice.queue_items.first.video.reviews.first.rating).to eq(5)
         end
       end
     end
 
     context "with invalid inputs" do
-      before { set_current_user }
-      let(:queue_item1) {Fabricate :queue_item, user: get_current_user, position: 1}
-      let(:queue_item2) {Fabricate :queue_item, user: get_current_user, position: 2}
+      before { set_current_user(alice) }
+      let(:queue_item1) {Fabricate :queue_item, user: alice, position: 1}
+      let(:queue_item2) {Fabricate :queue_item, user: alice, position: 2}
 
       it "redirects to my_queue page" do
         post :update_queue, queue_items: [{id: queue_item1.id, position: 1.5}, {id: queue_item2.id, position: 2}]
@@ -180,9 +180,9 @@ describe QueueItemsController do
     context "with queue_item that does not belong to current user" do
       it "does not change the queue_items" do
         bob = Fabricate(:user)
-        set_current_user
-        queue_item1 = Fabricate(:queue_item, user: get_current_user, position: 1)
-        queue_item2 = Fabricate(:queue_item, user: get_current_user, position: 2)
+        set_current_user(alice)
+        queue_item1 = Fabricate(:queue_item, user: alice, position: 1)
+        queue_item2 = Fabricate(:queue_item, user: alice, position: 2)
         queue_item_bob = Fabricate(:queue_item, user: bob, position: 1)
         queue_item_bob2 = Fabricate(:queue_item, user: bob, position: 2)
         post :update_queue, queue_items: [{id: queue_item1.id, position: 3}, {id: queue_item2.id, position: 1}, {id: queue_item_bob.id, position: 3}, {id: queue_item_bob2.id, position: 2}]
