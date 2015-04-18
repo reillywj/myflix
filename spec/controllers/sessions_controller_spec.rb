@@ -19,10 +19,9 @@ describe SessionsController do
       let(:user) {Fabricate :user, password: "password"}
 
       before {post :create, email: user.email, password: "password"}
+
       it("sets the session user_id") {expect(session[:user_id]).to eq(user.id)}
-
       it("redirects to home path") {response.should redirect_to home_path}
-
       it("flashes a success message") {expect(flash[:success]).not_to be_blank}
     end
 
@@ -53,9 +52,7 @@ describe SessionsController do
     end
 
     it("sets session user_id to nil") {expect(session[:user_id]).to eq(nil)}
-
     it("redirects to root path") {expect(response).to redirect_to root_path}
-
     it("flashes a success message") {expect(flash[:success]).not_to be_blank}
   end
 end
