@@ -39,13 +39,13 @@ describe SessionsController do
       it "redirects to sign_in path with invalid email" do
         user = Fabricate(:user, email: "valid@email.com", password: "valid_password")
         post :create, email: "invalid@email.com", password: "valid_password"
-        response.should redirect_to sign_in_path
+        expect_redirect_to_sign_in_path
       end
 
       it "redirects to sign_in path with invalid password" do
         user = Fabricate(:user, password: "password")
         post :create, email: user.email, password: "invalid_password"
-        response.should redirect_to sign_in_path
+        expect_redirect_to_sign_in_path
       end
 
       it "flashes a danger message" do
@@ -54,6 +54,7 @@ describe SessionsController do
       end
     end
   end
+  
   describe "GET destroy" do
     before do
       set_current_user
@@ -67,7 +68,7 @@ describe SessionsController do
     it "redirects to root path" do
       response.should redirect_to root_path
     end
-    
+
     it "flashes a success message" do
       expect(flash[:success]).not_to be_blank
     end

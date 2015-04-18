@@ -9,3 +9,7 @@ end
 def clear_current_user
   session[:user_id] = nil
 end
+
+def expect_redirect_to_sign_in_path
+  expect(response).to redirect_to sign_in_path
+end

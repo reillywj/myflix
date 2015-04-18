@@ -21,7 +21,7 @@ describe UsersController do
       end
 
       it "redirects to sign_in path" do
-        response.should redirect_to sign_in_path
+        expect_redirect_to_sign_in_path
       end
     end
 
@@ -37,7 +37,7 @@ describe UsersController do
       it "does not create a new user" do
         expect(User.all.count).to eq(0)
       end
-      
+
       it "render the new template" do
         response.should render_template :new
       end
