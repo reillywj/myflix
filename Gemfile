@@ -31,7 +31,7 @@ group :test do
   gem 'shoulda-matchers'
   gem 'capybara'
   # gem 'sellenium' # will need if/when add javascript for testing with capybara
-  # gem 'launch' # for looking in the browser at that point in the process; similar to binding.pry
+  gem 'launchy' # for looking in the browser at that point in the process; similar to binding.pry
 end
 
 group :production do
