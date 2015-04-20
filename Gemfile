@@ -29,6 +29,9 @@ end
 group :test do
   gem 'database_cleaner', '1.2.0'
   gem 'shoulda-matchers'
+  gem 'capybara'
+  # gem 'sellenium' # will need if/when add javascript for testing with capybara
+  gem 'launchy' # for looking in the browser at that point in the process; similar to binding.pry
 end
 
 group :production do
